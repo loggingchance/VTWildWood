@@ -23,750 +23,333 @@
     --text-light: #9A8777;
     --submit-bg: #1F3528;
     --submit-hover: #2A4A38;
-    --success: #2E7D32;
-    --error: #C62828;
-    --tab-inactive: #C47B28;
-    --shadow: 0 2px 8px rgba(59,35,20,0.12);
-    --shadow-lg: 0 4px 20px rgba(59,35,20,0.18);
+    --success: #3E634D;
+    --error: #9E3A3A;
+    --shadow: rgba(59, 35, 20, 0.08);
   }
 
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-
-  html {
-    background: var(--bark);
-  }
-
-  body {
-    font-family: 'DM Sans', -apple-system, sans-serif;
-    background: var(--cream);
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body { 
+    font-family: 'DM Sans', sans-serif; 
+    background-color: var(--cream); 
     color: var(--text);
-    min-height: 100dvh;
-    max-width: 600px;
-    margin: 0 auto;
-    -webkit-font-smoothing: antialiased;
+    margin: 0; 
+    padding: 0;
+    line-height: 1.5;
   }
 
-  /* === HEADER === */
-  .header {
-    background: var(--bark);
-    padding: 18px 20px 14px;
+  header {
+    background-color: var(--bark);
+    color: var(--cream);
+    padding: 2.5rem 1.5rem 3rem;
     text-align: center;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    border-bottom: 3px solid var(--amber);
+    position: relative;
+    overflow: hidden;
   }
 
-  .header h1 {
-    font-family: 'Libre Baskerville', Georgia, serif;
-    font-weight: 700;
-    font-size: 1.6rem;
-    color: var(--amber-glow);
-    letter-spacing: 2px;
+  header h1 {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 1.75rem;
+    margin: 0;
+    letter-spacing: -0.02em;
+  }
+
+  header p {
+    font-size: 0.9rem;
+    opacity: 0.8;
+    margin: 0.5rem 0 0;
+    font-weight: 500;
     text-transform: uppercase;
+    letter-spacing: 0.1em;
   }
 
-  /* === TABS === */
+  main {
+    max-width: 500px;
+    margin: -1.5rem auto 3rem;
+    padding: 0 1rem;
+    position: relative;
+    z-index: 2;
+  }
+
+  .form-card {
+    background: var(--field-bg);
+    padding: 2rem 1.5rem;
+    border-radius: 1rem;
+    box-shadow: 0 10px 25px var(--shadow);
+    margin-bottom: 1.5rem;
+  }
+
   .tabs {
     display: flex;
-    background: var(--tab-inactive);
-    position: sticky;
-    top: 55px;
-    z-index: 99;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+    background: var(--cream-dark);
+    padding: 0.4rem;
+    border-radius: 0.75rem;
   }
 
-  .tab {
+  .tab-btn {
     flex: 1;
-    padding: 14px 8px;
-    text-align: center;
+    padding: 0.75rem;
+    border: none;
+    border-radius: 0.5rem;
+    background: transparent;
+    font-family: 'DM Sans', sans-serif;
     font-weight: 700;
     font-size: 0.85rem;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
+    color: var(--text-mid);
     cursor: pointer;
-    transition: all 0.2s ease;
-    border: none;
-    background: transparent;
-    color: var(--bark);
-    opacity: 0.7;
-    font-family: inherit;
+    transition: all 0.2s;
   }
 
-  .tab.active {
-    background: var(--amber);
-    color: #fff;
-    opacity: 1;
-    box-shadow: inset 0 -3px 0 rgba(0,0,0,0.15);
-  }
-
-  .tab-icon {
-    margin-right: 6px;
-    font-size: 1rem;
-  }
-
-  /* === FORM AREA === */
-  .form-area {
-    padding: 20px 16px 100px;
-  }
-
-  .form-panel {
-    display: none;
-    animation: fadeIn 0.25s ease;
-  }
-
-  .form-panel.active {
-    display: block;
-  }
-
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(6px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  /* === FIELD GROUPS === */
-  .field-group {
+  .tab-btn.active {
     background: var(--field-bg);
-    border: 1px solid var(--cream-dark);
-    border-radius: 12px;
-    padding: 16px;
-    margin-bottom: 16px;
-    box-shadow: var(--shadow);
-  }
-
-  .field-group.compact {
-    display: flex;
-    gap: 12px;
-  }
-
-  .field-group.compact .field {
-    flex: 1;
-  }
-
-  .field {
-    margin-bottom: 14px;
-  }
-
-  .field:last-child {
-    margin-bottom: 0;
+    color: var(--bark);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
   }
 
   label {
     display: block;
     font-weight: 700;
-    font-size: 0.82rem;
+    font-size: 0.85rem;
+    margin-bottom: 0.5rem;
+    color: var(--bark);
     text-transform: uppercase;
-    letter-spacing: 0.4px;
-    color: var(--bark-light);
-    margin-bottom: 6px;
+    letter-spacing: 0.05em;
   }
 
-  input[type="text"],
-  input[type="number"],
-  textarea,
-  select {
+  .field-group { margin-bottom: 1.5rem; }
+
+  select, input, textarea {
     width: 100%;
-    padding: 12px 14px;
+    padding: 0.9rem 1rem;
     border: 2px solid var(--cream-dark);
-    border-radius: 8px;
+    border-radius: 0.75rem;
     font-family: 'DM Sans', sans-serif;
     font-size: 1rem;
-    color: var(--text);
-    background: var(--cream);
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
-    -webkit-appearance: none;
-    appearance: none;
-  }
-
-  input:focus,
-  textarea:focus,
-  select:focus {
+    background: var(--field-bg);
+    transition: border-color 0.2s;
     outline: none;
+  }
+
+  select:focus, input:focus, textarea:focus {
     border-color: var(--amber);
-    box-shadow: 0 0 0 3px rgba(212,136,43,0.15);
   }
 
-  textarea {
-    resize: vertical;
-    min-height: 80px;
-    line-height: 1.5;
-  }
-
-  select {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%235C3A24' stroke-width='2' fill='none'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 14px center;
-    padding-right: 36px;
+  .submit-btn {
+    width: 100%;
+    padding: 1.1rem;
+    background: var(--submit-bg);
+    color: white;
+    border: none;
+    border-radius: 0.75rem;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
     cursor: pointer;
-  }
-
-  input::placeholder,
-  textarea::placeholder {
-    color: var(--text-light);
-  }
-
-  /* === SENTIMENT PICKER === */
-  .sentiment-bar {
-    display: flex;
-    gap: 4px;
-    background: var(--cream);
-    border-radius: 10px;
-    padding: 8px;
-  }
-
-  .sentiment-btn {
-    flex: 1;
-    aspect-ratio: 1;
-    max-width: 56px;
-    border: 3px solid transparent;
-    border-radius: 10px;
-    background: transparent;
-    font-size: 1.8rem;
-    cursor: pointer;
-    transition: all 0.15s ease;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 4px;
+    gap: 0.75rem;
+    transition: transform 0.1s, background 0.2s;
   }
 
-  .sentiment-btn:hover {
-    background: var(--cream-dark);
-  }
+  .submit-btn:active { transform: scale(0.98); }
+  .submit-btn:disabled { opacity: 0.6; cursor: not-allowed; }
 
-  .sentiment-btn.selected {
-    border-color: var(--amber);
-    background: #FFF7ED;
-    transform: scale(1.08);
-    box-shadow: 0 2px 8px rgba(212,136,43,0.25);
-  }
-
-  /* === PHOTO UPLOAD === */
-  .photo-upload {
-    position: relative;
-  }
-
-  .photo-input-wrapper {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 12px 14px;
-    border: 2px dashed var(--cream-dark);
-    border-radius: 8px;
-    background: var(--cream);
-    cursor: pointer;
-    transition: border-color 0.2s ease;
-  }
-
-  .photo-input-wrapper:hover {
-    border-color: var(--amber);
-  }
-
-  .photo-input-wrapper.has-file {
-    border-style: solid;
-    border-color: var(--success);
-    background: #f0f7f0;
-  }
-
-  .photo-input-wrapper input[type="file"] {
-    position: absolute;
-    inset: 0;
-    opacity: 0;
-    cursor: pointer;
-  }
-
-  .photo-icon {
-    font-size: 1.4rem;
-  }
-
-  .photo-label {
+  #connection-error {
+    display: none;
+    background: #FFF0F0;
+    border: 1px solid var(--error);
+    color: var(--error);
+    padding: 1rem;
+    border-radius: 0.75rem;
+    margin-bottom: 1.5rem;
     font-size: 0.9rem;
-    color: var(--text-mid);
+    font-weight: 500;
+    text-align: center;
   }
 
-  .photo-input-wrapper.has-file .photo-label {
-    color: var(--success);
-    font-weight: 600;
+  .spinner {
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255,255,255,0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
   }
 
-  /* === SUBMIT BUTTON === */
-  .submit-btn {
-    display: block;
-    width: 100%;
-    padding: 16px;
-    margin-top: 24px;
-    border: none;
-    border-radius: 10px;
-    background: var(--submit-bg);
-    color: #fff;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 1rem;
-    font-weight: 700;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    box-shadow: var(--shadow-lg);
-  }
+  @keyframes spin { to { transform: rotate(360deg); } }
 
-  .submit-btn:hover {
-    background: var(--submit-hover);
-    transform: translateY(-1px);
-  }
-
-  .submit-btn:active {
-    transform: translateY(0);
-  }
-
-  .submit-btn:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-    transform: none;
-  }
-
-  /* === TOAST === */
   .toast {
     position: fixed;
-    bottom: 24px;
+    bottom: 2rem;
     left: 50%;
     transform: translateX(-50%) translateY(100px);
-    padding: 14px 24px;
-    border-radius: 10px;
+    padding: 1rem 2rem;
+    border-radius: 3rem;
+    color: white;
     font-weight: 600;
-    font-size: 0.9rem;
-    color: #fff;
-    z-index: 1000;
-    opacity: 0;
-    transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-    white-space: nowrap;
-    box-shadow: 0 6px 24px rgba(0,0,0,0.25);
+    z-index: 9999;
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
   }
-
-  .toast.show {
-    transform: translateX(-50%) translateY(0);
-    opacity: 1;
-  }
-
+  .toast.show { transform: translateX(-50%) translateY(0); }
   .toast.success { background: var(--success); }
   .toast.error { background: var(--error); }
 
-  /* === LOADING SPINNER === */
-  .spinner {
-    display: inline-block;
-    width: 18px;
-    height: 18px;
-    border: 2.5px solid rgba(255,255,255,0.3);
-    border-top-color: #fff;
-    border-radius: 50%;
-    animation: spin 0.6s linear infinite;
-    vertical-align: middle;
-    margin-right: 8px;
-  }
-
-  @keyframes spin {
-    to { transform: rotate(360deg); }
-  }
-
-  /* === LOADING SCREEN === */
-  .loading-screen {
-    text-align: center;
-    padding: 60px 20px;
-    color: var(--text-mid);
-  }
-
-  .loading-screen .dot-loader {
-    display: inline-flex;
-    gap: 6px;
-    margin-top: 16px;
-  }
-
-  .loading-screen .dot {
-    width: 8px;
-    height: 8px;
-    background: var(--amber);
-    border-radius: 50%;
-    animation: bounce 1.2s ease-in-out infinite;
-  }
-
-  .loading-screen .dot:nth-child(2) { animation-delay: 0.15s; }
-  .loading-screen .dot:nth-child(3) { animation-delay: 0.3s; }
-
-  @keyframes bounce {
-    0%, 80%, 100% { transform: translateY(0); }
-    40% { transform: translateY(-10px); }
-  }
-
-  /* === ERROR BANNER === */
-  .error-banner {
-    background: #FFF3F3;
-    border: 1px solid #F5C6C6;
-    border-radius: 10px;
-    padding: 16px;
-    margin-bottom: 16px;
-    color: var(--error);
-    font-size: 0.9rem;
-    text-align: center;
-    display: none;
-  }
-
-  .error-banner.show { display: block; }
-
-  .retry-btn {
-    display: inline-block;
-    margin-top: 8px;
-    padding: 8px 20px;
-    border: 2px solid var(--error);
-    border-radius: 6px;
-    background: transparent;
-    color: var(--error);
-    font-weight: 600;
-    font-size: 0.85rem;
-    cursor: pointer;
-    font-family: inherit;
-  }
-
-  .retry-btn:hover { background: var(--error); color: #fff; }
+  .hidden { display: none; }
 </style>
 </head>
 <body>
 
-<!-- ======================================== -->
-<!-- CONFIG: Replace with your Apps Script URL -->
-<!-- ======================================== -->
-<script>
-  const API_URL = "https://script.google.com/macros/s/AKfycbxvGBwknCIn5fs6prgwmaw0cYOcAnfrQnXKZoETXMsGYwWd-ogHywycEEZUFG8pHS5F/exec";
-</script>
-
-<!-- HEADER -->
-<div class="header">
+<header>
+  <p>Operation Log</p>
   <h1>Wildwood VT</h1>
-</div>
+</header>
 
-<!-- TABS -->
-<div class="tabs">
-  <button class="tab active" data-tab="morning" onclick="switchTab('morning')">
-    <span class="tab-icon">☀️</span> Morning Plan
-  </button>
-  <button class="tab" data-tab="eod" onclick="switchTab('eod')">
-    <span class="tab-icon">🌙</span> End of Day
-  </button>
-</div>
-
-<!-- FORM AREA -->
-<div class="form-area">
-  <!-- Loading state -->
-  <div id="loading-screen" class="loading-screen">
-    <div style="font-size:2rem; margin-bottom:8px;">🌲</div>
-    <div style="font-weight:600;">Loading...</div>
-    <div class="dot-loader"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+<main>
+  <div id="connection-error">
+    ⚠️ Couldn't connect to server. Check your internet or Google Sheet settings.
   </div>
 
-  <!-- Error banner for API issues -->
-  <div id="error-banner" class="error-banner">
-    <div>Couldn't connect to the server.</div>
-    <button class="retry-btn" onclick="loadClients()">Try Again</button>
-  </div>
+  <div class="form-card">
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('morning')">Morning Plan</button>
+      <button class="tab-btn" onclick="switchTab('eod')">End of Day</button>
+    </div>
 
-  <!-- ========== MORNING PLAN ========== -->
-  <div id="panel-morning" class="form-panel">
-    <div class="field-group compact">
-      <div class="field">
-        <label for="m-initials">Initials</label>
-        <input type="text" id="m-initials" placeholder="e.g. JB" maxlength="4" autocapitalize="characters">
+    <!-- MORNING FORM -->
+    <div id="morning-form">
+      <div class="field-group">
+        <label>Your Initials</label>
+        <input type="text" id="m-initials" placeholder="e.g. JB" maxlength="3">
       </div>
-      <div class="field">
-        <label for="m-customer">Customer</label>
+      <div class="field-group">
+        <label>Customer / Job</label>
         <select id="m-customer">
-          <option value="">Select...</option>
+          <option value="">Loading customers...</option>
         </select>
       </div>
+      <div class="field-group">
+        <label>Planned Hours</label>
+        <input type="number" id="m-hours" placeholder="0.0" step="0.5">
+      </div>
+      <div class="field-group">
+        <label>Planned Work</label>
+        <textarea id="m-work" rows="3" placeholder="What's the goal for today?"></textarea>
+      </div>
+      <button class="submit-btn" id="m-submit" onclick="submitMorning()">Submit Plan</button>
     </div>
 
-    <div class="field-group">
-      <div class="field">
-        <label for="m-hours">Planned Hours</label>
-        <input type="number" id="m-hours" placeholder="e.g. 7" min="0" max="24" step="0.5" inputmode="decimal">
+    <!-- EOD FORM -->
+    <div id="eod-form" class="hidden">
+      <div class="field-group">
+        <label>Your Initials</label>
+        <input type="text" id="e-initials" placeholder="e.g. JB" maxlength="3">
       </div>
-    </div>
-
-    <div class="field-group">
-      <div class="field">
-        <label for="m-work">Planned Work Items</label>
-        <textarea id="m-work" placeholder="What do you plan to get done today?"></textarea>
-      </div>
-    </div>
-
-    <div class="field-group">
-      <div class="field">
-        <label for="m-notes">Notes / Anything to flag?</label>
-        <textarea id="m-notes" placeholder="Supply needs, blockers, questions..."></textarea>
-      </div>
-    </div>
-
-    <button class="submit-btn" id="btn-morning" onclick="submitMorning()">
-      Submit Morning Plan
-    </button>
-  </div>
-
-  <!-- ========== END OF DAY ========== -->
-  <div id="panel-eod" class="form-panel">
-    <div class="field-group compact">
-      <div class="field">
-        <label for="e-initials">Initials</label>
-        <input type="text" id="e-initials" placeholder="e.g. JB" maxlength="4" autocapitalize="characters">
-      </div>
-      <div class="field">
-        <label for="e-customer">Customer</label>
+      <div class="field-group">
+        <label>Customer / Job</label>
         <select id="e-customer">
-          <option value="">Select...</option>
+          <option value="">Loading customers...</option>
         </select>
       </div>
-    </div>
-
-    <div class="field-group">
-      <div class="field">
-        <label for="e-hours">Hours Worked</label>
-        <input type="number" id="e-hours" placeholder="e.g. 7.5" min="0" max="24" step="0.5" inputmode="decimal">
+      <div class="field-group">
+        <label>Actual Hours Worked</label>
+        <input type="number" id="e-hours" placeholder="0.0" step="0.5">
       </div>
-    </div>
-
-    <div class="field-group">
-      <div class="field">
-        <label for="e-work">Work Completed</label>
-        <textarea id="e-work" placeholder="What got done today?"></textarea>
+      <div class="field-group">
+        <label>Work Completed</label>
+        <textarea id="e-work" rows="3" placeholder="What got done?"></textarea>
       </div>
-    </div>
-
-    <div class="field-group">
-      <div class="field">
-        <label>How did today go?</label>
-        <div class="sentiment-bar">
-          <button class="sentiment-btn" data-val="🤩" onclick="pickSentiment(this)">🤩</button>
-          <button class="sentiment-btn" data-val="🙂" onclick="pickSentiment(this)">🙂</button>
-          <button class="sentiment-btn" data-val="😐" onclick="pickSentiment(this)">😐</button>
-          <button class="sentiment-btn" data-val="😟" onclick="pickSentiment(this)">😟</button>
-          <button class="sentiment-btn" data-val="😡" onclick="pickSentiment(this)">😡</button>
-        </div>
+      <div class="field-group">
+        <label>Notes / Issues</label>
+        <textarea id="e-notes" rows="2" placeholder="Any mechanical issues or site notes?"></textarea>
       </div>
+      <button class="submit-btn" id="e-submit" onclick="submitEOD()">Submit End of Day</button>
     </div>
-
-    <div class="field-group">
-      <div class="field">
-        <label for="e-notes">Anything else to share?</label>
-        <textarea id="e-notes" placeholder="Supply needs, blockers, questions..."></textarea>
-      </div>
-    </div>
-
-    <div class="field-group">
-      <div class="field">
-        <label>Photo</label>
-        <div class="photo-upload">
-          <div class="photo-input-wrapper" id="photo-wrapper">
-            <span class="photo-icon">📷</span>
-            <span class="photo-label" id="photo-label">Tap to take or choose a photo</span>
-            <input type="file" id="e-photo" accept="image/*" capture="environment" onchange="handlePhoto(this)">
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="field-group">
-      <div class="field">
-        <label for="e-tomorrow">Tomorrow's Goal</label>
-        <textarea id="e-tomorrow" placeholder="Top priority for tomorrow..." style="min-height:60px;"></textarea>
-      </div>
-    </div>
-
-    <button class="submit-btn" id="btn-eod" onclick="submitEOD()">
-      Submit End of Day
-    </button>
   </div>
-</div>
+</main>
 
-<!-- TOAST -->
-<div class="toast" id="toast"></div>
+<div id="toast" class="toast"></div>
 
 <script>
-  /* ========== STATE ========== */
-  let selectedSentiment = "";
-  let photoBase64 = null;
-  let photoName = null;
+  const API_URL = "https://script.google.com/macros/s/AKfycbxY_9oGA2nyev85HUbYXAXcUb04UrkfNSFSNMtFfMgdEpWodm09SKfawHRdUM1wTwI/exec";
 
-  /* ========== INIT ========== */
-  document.addEventListener("DOMContentLoaded", loadClients);
+  window.onload = loadClients;
 
-  /* ========== LOAD CLIENTS VIA JSONP ========== */
-  /* Uses a <script> tag instead of fetch to completely bypass CORS/redirect issues */
-  function loadClients() {
-    const loading = document.getElementById("loading-screen");
-    const errBanner = document.getElementById("error-banner");
-    loading.style.display = "block";
-    errBanner.classList.remove("show");
-    document.getElementById("panel-morning").classList.remove("active");
-    document.getElementById("panel-eod").classList.remove("active");
-
-    const callbackName = "_wildwood_cb_" + Date.now();
-    let timedOut = false;
-
-    // Global callback that Apps Script will invoke
-    window[callbackName] = function(data) {
-      if (timedOut) return;
-      cleanup();
-      if (data && data.success) {
-        populateDropdowns(data.clients);
-        loading.style.display = "none";
-        const activeTab = document.querySelector(".tab.active").dataset.tab;
-        document.getElementById("panel-" + activeTab).classList.add("active");
-      } else {
-        loading.style.display = "none";
-        errBanner.classList.add("show");
-      }
-    };
-
-    // Inject script tag — this is JSONP, no CORS involved
-    const script = document.createElement("script");
-    script.src = API_URL + "?callback=" + callbackName;
-    script.onerror = function() {
-      if (timedOut) return;
-      cleanup();
-      loading.style.display = "none";
-      errBanner.classList.add("show");
-    };
-    document.head.appendChild(script);
-
-    // Timeout after 15 seconds
-    const timer = setTimeout(function() {
-      timedOut = true;
-      cleanup();
-      loading.style.display = "none";
-      errBanner.classList.add("show");
-    }, 15000);
-
-    function cleanup() {
-      clearTimeout(timer);
-      delete window[callbackName];
-      if (script.parentNode) script.parentNode.removeChild(script);
+  function switchTab(type) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    event.target.classList.add('active');
+    
+    if (type === 'morning') {
+      document.getElementById('morning-form').classList.remove('hidden');
+      document.getElementById('eod-form').classList.add('hidden');
+    } else {
+      document.getElementById('morning-form').classList.add('hidden');
+      document.getElementById('eod-form').classList.remove('hidden');
     }
   }
 
-  function populateDropdowns(clients) {
-    const selects = [document.getElementById("m-customer"), document.getElementById("e-customer")];
+  function loadClients() {
+    const script = document.createElement('script');
+    script.src = API_URL + "?callback=renderClients";
+    document.body.appendChild(script);
+
+    setTimeout(() => {
+      const selects = [document.getElementById('m-customer'), document.getElementById('e-customer')];
+      if (selects[0].options.length <= 1) {
+        document.getElementById('connection-error').style.display = 'block';
+      }
+    }, 8000);
+  }
+
+  function renderClients(data) {
+    if (!data.success) return;
+    const selects = [document.getElementById('m-customer'), document.getElementById('e-customer')];
     selects.forEach(sel => {
-      sel.innerHTML = '<option value="">Select...</option>';
-      clients.forEach(name => {
-        const opt = document.createElement("option");
-        opt.value = name;
-        opt.textContent = name;
+      sel.innerHTML = '<option value="">-- Select Customer --</option>';
+      data.clients.forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = opt.textContent = c;
         sel.appendChild(opt);
       });
     });
+    document.getElementById('connection-error').style.display = 'none';
   }
 
-  /* ========== TABS ========== */
-  function switchTab(tab) {
-    document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
-    document.querySelector(`.tab[data-tab="${tab}"]`).classList.add("active");
-    document.querySelectorAll(".form-panel").forEach(p => p.classList.remove("active"));
-    const panel = document.getElementById("panel-" + tab);
-    if (panel) panel.classList.add("active");
-  }
-
-  /* ========== SENTIMENT ========== */
-  function pickSentiment(btn) {
-    document.querySelectorAll(".sentiment-btn").forEach(b => b.classList.remove("selected"));
-    btn.classList.add("selected");
-    selectedSentiment = btn.dataset.val;
-  }
-
-  /* ========== PHOTO ========== */
-  function handlePhoto(input) {
-    const file = input.files[0];
-    const wrapper = document.getElementById("photo-wrapper");
-    const label = document.getElementById("photo-label");
-
-    if (!file) {
-      wrapper.classList.remove("has-file");
-      label.textContent = "Tap to take or choose a photo";
-      photoBase64 = null;
-      photoName = null;
-      return;
-    }
-
-    wrapper.classList.add("has-file");
-    label.textContent = "✓ " + file.name;
-    photoName = file.name;
-
-    const reader = new FileReader();
-    reader.onload = function(e) {
-      photoBase64 = e.target.result.split(",")[1];
-    };
-    reader.readAsDataURL(file);
-  }
-
-  /* ========== SUBMIT: MORNING ========== */
   function submitMorning() {
-    const initials = document.getElementById("m-initials").value.trim();
-    const customer = document.getElementById("m-customer").value;
-
-    if (!initials) { showToast("Enter your initials", "error"); return; }
-    if (!customer) { showToast("Select a customer", "error"); return; }
-
     const payload = {
       action: "morning",
-      initials: initials.toUpperCase(),
-      customer: customer,
-      plannedHours: document.getElementById("m-hours").value || "",
-      plannedWork: document.getElementById("m-work").value.trim(),
-      planNotes: document.getElementById("m-notes").value.trim()
+      initials: document.getElementById('m-initials').value,
+      customer: document.getElementById('m-customer').value,
+      plannedHours: document.getElementById('m-hours').value,
+      plannedWork: document.getElementById('m-work').value
     };
-
-    sendData(payload, "btn-morning", "Submit Morning Plan", function() {
-      document.getElementById("m-initials").value = "";
-      document.getElementById("m-customer").value = "";
-      document.getElementById("m-hours").value = "";
-      document.getElementById("m-work").value = "";
-      document.getElementById("m-notes").value = "";
+    if (!payload.initials || !payload.customer) return showToast("Initials & Customer required", "error");
+    sendData(payload, "m-submit", "Submit Plan", () => {
+      document.getElementById('m-hours').value = "";
+      document.getElementById('m-work').value = "";
     });
   }
 
-  /* ========== SUBMIT: END OF DAY ========== */
   function submitEOD() {
-    const initials = document.getElementById("e-initials").value.trim();
-    const customer = document.getElementById("e-customer").value;
-
-    if (!initials) { showToast("Enter your initials", "error"); return; }
-    if (!customer) { showToast("Select a customer", "error"); return; }
-
     const payload = {
       action: "eod",
-      initials: initials.toUpperCase(),
-      customer: customer,
-      hoursWorked: document.getElementById("e-hours").value || "",
-      workCompleted: document.getElementById("e-work").value.trim(),
-      sentiment: selectedSentiment,
-      eodNotes: document.getElementById("e-notes").value.trim(),
-      tomorrowGoal: document.getElementById("e-tomorrow").value.trim(),
-      photoBase64: photoBase64,
-      photoName: photoName
+      initials: document.getElementById('e-initials').value,
+      customer: document.getElementById('e-customer').value,
+      hoursWorked: document.getElementById('e-hours').value,
+      workCompleted: document.getElementById('e-work').value,
+      eodNotes: document.getElementById('e-notes').value
     };
-
-    sendData(payload, "btn-eod", "Submit End of Day", function() {
-      document.getElementById("e-initials").value = "";
-      document.getElementById("e-customer").value = "";
-      document.getElementById("e-hours").value = "";
-      document.getElementById("e-work").value = "";
-      document.getElementById("e-notes").value = "";
-      document.getElementById("e-tomorrow").value = "";
-      selectedSentiment = "";
-      photoBase64 = null;
-      photoName = null;
-      document.getElementById("e-photo").value = "";
-      document.getElementById("photo-wrapper").classList.remove("has-file");
-      document.getElementById("photo-label").textContent = "Tap to take or choose a photo";
-      document.querySelectorAll(".sentiment-btn").forEach(b => b.classList.remove("selected"));
+    if (!payload.initials || !payload.customer) return showToast("Initials & Customer required", "error");
+    sendData(payload, "e-submit", "Submit End of Day", () => {
+      document.getElementById('e-hours').value = "";
+      document.getElementById('e-work').value = "";
+      document.getElementById('e-notes').value = "";
     });
   }
 
-  /* ========== SEND DATA (fire-and-forget POST) ========== */
   function sendData(payload, btnId, btnLabel, onSuccess) {
     const btn = document.getElementById(btnId);
     btn.disabled = true;
@@ -779,13 +362,11 @@
       body: JSON.stringify(payload)
     })
     .then(() => {
-      // With no-cors, we can't read the response but the data was sent
       showToast("Submitted!", "success");
       if (onSuccess) onSuccess();
     })
     .catch(err => {
-      console.error("Submit error:", err);
-      showToast("Network error — try again", "error");
+      showToast("Network Error", "error");
     })
     .finally(() => {
       btn.disabled = false;
@@ -793,15 +374,11 @@
     });
   }
 
-  /* ========== TOAST ========== */
   function showToast(msg, type) {
     const toast = document.getElementById("toast");
     toast.textContent = msg;
     toast.className = "toast " + type + " show";
-    clearTimeout(toast._timeout);
-    toast._timeout = setTimeout(() => {
-      toast.classList.remove("show");
-    }, 3000);
+    setTimeout(() => toast.classList.remove("show"), 3000);
   }
 </script>
 
