@@ -433,7 +433,7 @@
 <!-- CONFIG: Replace with your Apps Script URL -->
 <!-- ======================================== -->
 <script>
-  const API_URL = "YOUR_APPS_SCRIPT_URL_HERE";
+  const API_URL = "https://script.google.com/macros/s/AKfycbxvGBwknCIn5fs6prgwmaw0cYOcAnfrQnXKZoETXMsGYwWd-ogHywycEEZUFG8pHS5F/exec";
 </script>
 
 <!-- HEADER -->
@@ -594,6 +594,8 @@
   /* ========== INIT ========== */
   document.addEventListener("DOMContentLoaded", loadClients);
 
+  /* ========== LOAD CLIENTS VIA JSONP ========== */
+  /* Uses a <script> tag instead of fetch to completely bypass CORS/redirect issues */
   function loadClients() {
     const loading = document.getElementById("loading-screen");
     const errBanner = document.getElementById("error-banner");
@@ -602,27 +604,53 @@
     document.getElementById("panel-morning").classList.remove("active");
     document.getElementById("panel-eod").classList.remove("active");
 
-    fetch(API_URL)
-      .then(r => r.json())
-      .then(data => {
-        if (!data.success) throw new Error(data.error || "API error");
+    const callbackName = "_wildwood_cb_" + Date.now();
+    let timedOut = false;
+
+    // Global callback that Apps Script will invoke
+    window[callbackName] = function(data) {
+      if (timedOut) return;
+      cleanup();
+      if (data && data.success) {
         populateDropdowns(data.clients);
         loading.style.display = "none";
-        // Show the active tab's panel
         const activeTab = document.querySelector(".tab.active").dataset.tab;
         document.getElementById("panel-" + activeTab).classList.add("active");
-      })
-      .catch(err => {
-        console.error("Load error:", err);
+      } else {
         loading.style.display = "none";
         errBanner.classList.add("show");
-      });
+      }
+    };
+
+    // Inject script tag — this is JSONP, no CORS involved
+    const script = document.createElement("script");
+    script.src = API_URL + "?callback=" + callbackName;
+    script.onerror = function() {
+      if (timedOut) return;
+      cleanup();
+      loading.style.display = "none";
+      errBanner.classList.add("show");
+    };
+    document.head.appendChild(script);
+
+    // Timeout after 15 seconds
+    const timer = setTimeout(function() {
+      timedOut = true;
+      cleanup();
+      loading.style.display = "none";
+      errBanner.classList.add("show");
+    }, 15000);
+
+    function cleanup() {
+      clearTimeout(timer);
+      delete window[callbackName];
+      if (script.parentNode) script.parentNode.removeChild(script);
+    }
   }
 
   function populateDropdowns(clients) {
     const selects = [document.getElementById("m-customer"), document.getElementById("e-customer")];
     selects.forEach(sel => {
-      // Keep the first "Select..." option
       sel.innerHTML = '<option value="">Select...</option>';
       clients.forEach(name => {
         const opt = document.createElement("option");
@@ -663,15 +691,12 @@
       return;
     }
 
-    // Show filename
     wrapper.classList.add("has-file");
     label.textContent = "✓ " + file.name;
     photoName = file.name;
 
-    // Convert to base64
     const reader = new FileReader();
     reader.onload = function(e) {
-      // Strip the data URL prefix to get raw base64
       photoBase64 = e.target.result.split(",")[1];
     };
     reader.readAsDataURL(file);
@@ -695,7 +720,6 @@
     };
 
     sendData(payload, "btn-morning", "Submit Morning Plan", function() {
-      // Clear form on success
       document.getElementById("m-initials").value = "";
       document.getElementById("m-customer").value = "";
       document.getElementById("m-hours").value = "";
@@ -726,7 +750,6 @@
     };
 
     sendData(payload, "btn-eod", "Submit End of Day", function() {
-      // Clear form on success
       document.getElementById("e-initials").value = "";
       document.getElementById("e-customer").value = "";
       document.getElementById("e-hours").value = "";
@@ -743,7 +766,7 @@
     });
   }
 
-  /* ========== SEND DATA ========== */
+  /* ========== SEND DATA (fire-and-forget POST) ========== */
   function sendData(payload, btnId, btnLabel, onSuccess) {
     const btn = document.getElementById(btnId);
     btn.disabled = true;
@@ -751,17 +774,14 @@
 
     fetch(API_URL, {
       method: "POST",
-      headers: { "Content-Type": "text/plain" }, // text/plain avoids CORS preflight with Apps Script
+      mode: "no-cors",
+      headers: { "Content-Type": "text/plain" },
       body: JSON.stringify(payload)
     })
-    .then(r => r.json())
-    .then(data => {
-      if (data.success) {
-        showToast(data.message || "Submitted!", "success");
-        if (onSuccess) onSuccess();
-      } else {
-        showToast(data.error || "Something went wrong", "error");
-      }
+    .then(() => {
+      // With no-cors, we can't read the response but the data was sent
+      showToast("Submitted!", "success");
+      if (onSuccess) onSuccess();
     })
     .catch(err => {
       console.error("Submit error:", err);
