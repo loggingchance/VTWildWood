@@ -136,22 +136,27 @@
     border-color: var(--amber);
   }
 
-  /* Photo upload area */
-  .photo-upload-area {
-    border: 2px dashed var(--cream-dark);
+  /* Photo upload */
+  .photo-btn-wrap { position: relative; }
+  .photo-btn {
+    width: 100%;
+    padding: 1rem;
+    background: var(--amber);
+    color: var(--bark);
+    border: none;
     border-radius: 0.75rem;
-    padding: 1.25rem 1rem;
-    text-align: center;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
     cursor: pointer;
-    transition: border-color 0.2s, background 0.2s;
-    position: relative;
-    background: var(--cream);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    transition: background 0.2s;
   }
-  .photo-upload-area:hover, .photo-upload-area:focus-within {
-    border-color: var(--amber);
-    background: #fffaf2;
-  }
-  .photo-upload-area input[type="file"] {
+  .photo-btn:active { background: var(--amber-light); }
+  .photo-btn-wrap input[type="file"] {
     position: absolute;
     inset: 0;
     width: 100%;
@@ -159,20 +164,22 @@
     opacity: 0;
     cursor: pointer;
   }
-  .photo-upload-label {
-    font-size: 0.9rem;
-    color: var(--text-mid);
-    font-weight: 500;
-    pointer-events: none;
-  }
-  .photo-upload-label .icon { font-size: 1.5rem; display: block; margin-bottom: 0.25rem; }
   .photo-preview {
     margin-top: 0.75rem;
-    max-width: 100%;
-    max-height: 180px;
-    border-radius: 0.5rem;
+    width: 100%;
+    max-height: 200px;
+    border-radius: 0.75rem;
     display: none;
     object-fit: cover;
+    border: 2px solid var(--cream-dark);
+  }
+  .photo-name {
+    margin-top: 0.4rem;
+    font-size: 0.8rem;
+    color: var(--success);
+    font-weight: 600;
+    display: none;
+    text-align: center;
   }
 
   .submit-btn {
@@ -310,14 +317,12 @@
       </div>
       <div class="field-group">
         <label>Site Photo (Optional)</label>
-        <div class="photo-upload-area" id="photo-area">
-          <input type="file" id="e-photo" accept="image/*" capture="environment" onchange="handlePhotoSelect(this)">
-          <div class="photo-upload-label">
-            <span class="icon">📷</span>
-            Tap to take a photo or choose from library
-          </div>
-          <img id="photo-preview" class="photo-preview" alt="Preview">
+        <div class="photo-btn-wrap">
+          <input type="file" id="e-photo" accept="image/*" onchange="handlePhotoSelect(this)">
+          <button class="photo-btn" type="button">📷 &nbsp;Add Photo from Library</button>
         </div>
+        <img id="photo-preview" class="photo-preview" alt="Preview">
+        <div class="photo-name" id="photo-name"></div>
       </div>
       <button class="submit-btn" id="e-submit" onclick="submitEOD()">Submit End of Day</button>
     </div>
@@ -390,7 +395,6 @@
     photoName = "wildwood_" + Date.now() + ".jpg";
     const reader = new FileReader();
     reader.onload = function(e) {
-      // Resize via canvas before encoding to keep payload manageable
       const img = new Image();
       img.onload = function() {
         const MAX = 1024;
@@ -403,12 +407,13 @@
         canvas.width = w; canvas.height = h;
         canvas.getContext('2d').drawImage(img, 0, 0, w, h);
         const dataUrl = canvas.toDataURL('image/jpeg', 0.75);
-        photoBase64 = dataUrl.split(',')[1]; // strip the data: prefix
-        // Show preview
+        photoBase64 = dataUrl.split(',')[1];
         const preview = document.getElementById('photo-preview');
         preview.src = dataUrl;
         preview.style.display = 'block';
-        document.querySelector('#photo-area .photo-upload-label').style.display = 'none';
+        const nameEl = document.getElementById('photo-name');
+        nameEl.textContent = "✅ " + file.name;
+        nameEl.style.display = 'block';
       };
       img.src = e.target.result;
     };
@@ -463,7 +468,7 @@
       document.getElementById('e-photo').value = "";
       document.getElementById('photo-preview').style.display = 'none';
       document.getElementById('photo-preview').src = "";
-      document.querySelector('#photo-area .photo-upload-label').style.display = 'block';
+      document.getElementById('photo-name').style.display = 'none';
       photoBase64 = null;
       photoName = null;
     });
