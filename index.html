@@ -258,11 +258,7 @@
 </header>
 
 <main>
-  <div id="connection-error">
-    ⚠️ Couldn't connect to server. Check your internet or Google Sheet settings.
-  </div>
-
-  <div class="form-card">
+<div class="form-card">
     <div class="tabs">
       <button class="tab-btn active" id="tab-morning" onclick="switchTab('morning', this)">Morning Plan</button>
       <button class="tab-btn" id="tab-eod" onclick="switchTab('eod', this)">End of Day</button>
@@ -339,9 +335,20 @@
   let photoBase64 = null;
   let photoName = null;
 
-  window.onload = loadClients;
+  // Client list — update this array when customers change
+  const CLIENTS = ["Nancy", "Bucky", "Ludlow", "Fortin", "Goodsell"];
 
-  function switchTab(type, btn) {
+  window.onload = function() {
+    const selects = [document.getElementById('m-customer'), document.getElementById('e-customer')];
+    selects.forEach(sel => {
+      sel.innerHTML = '<option value="">-- Select Customer --</option>';
+      CLIENTS.forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = opt.textContent = c;
+        sel.appendChild(opt);
+      });
+    });
+  };
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     if (type === 'morning') {
@@ -351,40 +358,6 @@
       document.getElementById('morning-form').classList.add('hidden');
       document.getElementById('eod-form').classList.remove('hidden');
     }
-  }
-
-  // ── Client List via JSONP (bypasses CORS redirect) ────────────────────────
-  function loadClients() {
-    const script = document.createElement('script');
-    script.src = API_URL + "?callback=renderClients&t=" + Date.now();
-    script.onerror = () => {
-      document.getElementById('connection-error').style.display = 'block';
-    };
-    document.body.appendChild(script);
-
-    setTimeout(() => {
-      const sel = document.getElementById('m-customer');
-      if (sel.options.length <= 1 || sel.options[0].value === "") {
-        document.getElementById('connection-error').style.display = 'block';
-      }
-    }, 8000);
-  }
-
-  function renderClients(data) {
-    document.getElementById('connection-error').style.display = 'none';
-    if (!data.success) {
-      document.getElementById('connection-error').style.display = 'block';
-      return;
-    }
-    const selects = [document.getElementById('m-customer'), document.getElementById('e-customer')];
-    selects.forEach(sel => {
-      sel.innerHTML = '<option value="">-- Select Customer --</option>';
-      data.clients.forEach(c => {
-        const opt = document.createElement('option');
-        opt.value = opt.textContent = c;
-        sel.appendChild(opt);
-      });
-    });
   }
 
   // ── Photo handling ────────────────────────────────────────────────────────
