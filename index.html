@@ -120,7 +120,7 @@
 
   .field-group { margin-bottom: 1.5rem; }
 
-  select, input, textarea {
+  select, input[type="text"], input[type="number"], textarea {
     width: 100%;
     padding: 0.9rem 1rem;
     border: 2px solid var(--cream-dark);
@@ -132,8 +132,47 @@
     outline: none;
   }
 
-  select:focus, input:focus, textarea:focus {
+  select:focus, input[type="text"]:focus, input[type="number"]:focus, textarea:focus {
     border-color: var(--amber);
+  }
+
+  /* Photo upload area */
+  .photo-upload-area {
+    border: 2px dashed var(--cream-dark);
+    border-radius: 0.75rem;
+    padding: 1.25rem 1rem;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+    position: relative;
+    background: var(--cream);
+  }
+  .photo-upload-area:hover, .photo-upload-area:focus-within {
+    border-color: var(--amber);
+    background: #fffaf2;
+  }
+  .photo-upload-area input[type="file"] {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+  }
+  .photo-upload-label {
+    font-size: 0.9rem;
+    color: var(--text-mid);
+    font-weight: 500;
+    pointer-events: none;
+  }
+  .photo-upload-label .icon { font-size: 1.5rem; display: block; margin-bottom: 0.25rem; }
+  .photo-preview {
+    margin-top: 0.75rem;
+    max-width: 100%;
+    max-height: 180px;
+    border-radius: 0.5rem;
+    display: none;
+    object-fit: cover;
   }
 
   .submit-btn {
@@ -177,6 +216,7 @@
     border-top-color: #fff;
     border-radius: 50%;
     animation: spin 0.8s linear infinite;
+    flex-shrink: 0;
   }
 
   @keyframes spin { to { transform: rotate(360deg); } }
@@ -193,6 +233,8 @@
     z-index: 9999;
     transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    text-align: center;
+    max-width: 90vw;
   }
   .toast.show { transform: translateX(-50%) translateY(0); }
   .toast.success { background: var(--success); }
@@ -215,15 +257,15 @@
 
   <div class="form-card">
     <div class="tabs">
-      <button class="tab-btn active" onclick="switchTab('morning')">Morning Plan</button>
-      <button class="tab-btn" onclick="switchTab('eod')">End of Day</button>
+      <button class="tab-btn active" id="tab-morning" onclick="switchTab('morning', this)">Morning Plan</button>
+      <button class="tab-btn" id="tab-eod" onclick="switchTab('eod', this)">End of Day</button>
     </div>
 
     <!-- MORNING FORM -->
     <div id="morning-form">
       <div class="field-group">
         <label>Your Initials</label>
-        <input type="text" id="m-initials" placeholder="e.g. JB" maxlength="3">
+        <input type="text" id="m-initials" placeholder="e.g. JB" maxlength="3" autocomplete="off">
       </div>
       <div class="field-group">
         <label>Customer / Job</label>
@@ -233,7 +275,7 @@
       </div>
       <div class="field-group">
         <label>Planned Hours</label>
-        <input type="number" id="m-hours" placeholder="0.0" step="0.5">
+        <input type="number" id="m-hours" placeholder="0.0" step="0.5" min="0">
       </div>
       <div class="field-group">
         <label>Planned Work</label>
@@ -246,7 +288,7 @@
     <div id="eod-form" class="hidden">
       <div class="field-group">
         <label>Your Initials</label>
-        <input type="text" id="e-initials" placeholder="e.g. JB" maxlength="3">
+        <input type="text" id="e-initials" placeholder="e.g. JB" maxlength="3" autocomplete="off">
       </div>
       <div class="field-group">
         <label>Customer / Job</label>
@@ -256,7 +298,7 @@
       </div>
       <div class="field-group">
         <label>Actual Hours Worked</label>
-        <input type="number" id="e-hours" placeholder="0.0" step="0.5">
+        <input type="number" id="e-hours" placeholder="0.0" step="0.5" min="0">
       </div>
       <div class="field-group">
         <label>Work Completed</label>
@@ -266,6 +308,17 @@
         <label>Notes / Issues</label>
         <textarea id="e-notes" rows="2" placeholder="Any mechanical issues or site notes?"></textarea>
       </div>
+      <div class="field-group">
+        <label>Site Photo (Optional)</label>
+        <div class="photo-upload-area" id="photo-area">
+          <input type="file" id="e-photo" accept="image/*" capture="environment" onchange="handlePhotoSelect(this)">
+          <div class="photo-upload-label">
+            <span class="icon">📷</span>
+            Tap to take a photo or choose from library
+          </div>
+          <img id="photo-preview" class="photo-preview" alt="Preview">
+        </div>
+      </div>
       <button class="submit-btn" id="e-submit" onclick="submitEOD()">Submit End of Day</button>
     </div>
   </div>
@@ -274,14 +327,18 @@
 <div id="toast" class="toast"></div>
 
 <script>
-  const API_URL = "https://script.google.com/macros/s/AKfycbxY_9oGA2nyev85HUbYXAXcUb04UrkfNSFSNMtFfMgdEpWodm09SKfawHRdUM1wTwI/exec";
+  // ─── UPDATE THIS URL if you redeploy the Apps Script ───────────────────────
+  const API_URL = "https://script.google.com/macros/s/AKfycbxvGBwknCIn5fs6prgwmaw0cYOcAnfrQnXKZoETXMsGYwWd-ogHywycEEZUFG8pHS5F/exec";
+  // ───────────────────────────────────────────────────────────────────────────
+
+  let photoBase64 = null;
+  let photoName = null;
 
   window.onload = loadClients;
 
-  function switchTab(type) {
+  function switchTab(type, btn) {
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    event.target.classList.add('active');
-    
+    btn.classList.add('active');
     if (type === 'morning') {
       document.getElementById('morning-form').classList.remove('hidden');
       document.getElementById('eod-form').classList.add('hidden');
@@ -291,21 +348,29 @@
     }
   }
 
+  // ── Client List via JSONP (bypasses CORS redirect) ────────────────────────
   function loadClients() {
     const script = document.createElement('script');
-    script.src = API_URL + "?callback=renderClients";
+    script.src = API_URL + "?callback=renderClients&t=" + Date.now();
+    script.onerror = () => {
+      document.getElementById('connection-error').style.display = 'block';
+    };
     document.body.appendChild(script);
 
     setTimeout(() => {
-      const selects = [document.getElementById('m-customer'), document.getElementById('e-customer')];
-      if (selects[0].options.length <= 1) {
+      const sel = document.getElementById('m-customer');
+      if (sel.options.length <= 1 || sel.options[0].value === "") {
         document.getElementById('connection-error').style.display = 'block';
       }
     }, 8000);
   }
 
   function renderClients(data) {
-    if (!data.success) return;
+    document.getElementById('connection-error').style.display = 'none';
+    if (!data.success) {
+      document.getElementById('connection-error').style.display = 'block';
+      return;
+    }
     const selects = [document.getElementById('m-customer'), document.getElementById('e-customer')];
     selects.forEach(sel => {
       sel.innerHTML = '<option value="">-- Select Customer --</option>';
@@ -315,18 +380,55 @@
         sel.appendChild(opt);
       });
     });
-    document.getElementById('connection-error').style.display = 'none';
   }
 
+  // ── Photo handling ────────────────────────────────────────────────────────
+  function handlePhotoSelect(input) {
+    const file = input.files[0];
+    if (!file) return;
+
+    photoName = "wildwood_" + Date.now() + ".jpg";
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      // Resize via canvas before encoding to keep payload manageable
+      const img = new Image();
+      img.onload = function() {
+        const MAX = 1024;
+        let w = img.width, h = img.height;
+        if (w > MAX || h > MAX) {
+          if (w > h) { h = Math.round(h * MAX / w); w = MAX; }
+          else       { w = Math.round(w * MAX / h); h = MAX; }
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.75);
+        photoBase64 = dataUrl.split(',')[1]; // strip the data: prefix
+        // Show preview
+        const preview = document.getElementById('photo-preview');
+        preview.src = dataUrl;
+        preview.style.display = 'block';
+        document.querySelector('#photo-area .photo-upload-label').style.display = 'none';
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  // ── Form submissions ──────────────────────────────────────────────────────
   function submitMorning() {
+    const initials = document.getElementById('m-initials').value.trim();
+    const customer = document.getElementById('m-customer').value;
+    if (!initials || !customer) return showToast("Initials & Customer required", "error");
+
     const payload = {
       action: "morning",
-      initials: document.getElementById('m-initials').value,
-      customer: document.getElementById('m-customer').value,
+      initials,
+      customer,
       plannedHours: document.getElementById('m-hours').value,
       plannedWork: document.getElementById('m-work').value
     };
-    if (!payload.initials || !payload.customer) return showToast("Initials & Customer required", "error");
+
     sendData(payload, "m-submit", "Submit Plan", () => {
       document.getElementById('m-hours').value = "";
       document.getElementById('m-work').value = "";
@@ -334,26 +436,44 @@
   }
 
   function submitEOD() {
+    const initials = document.getElementById('e-initials').value.trim();
+    const customer = document.getElementById('e-customer').value;
+    if (!initials || !customer) return showToast("Initials & Customer required", "error");
+
     const payload = {
       action: "eod",
-      initials: document.getElementById('e-initials').value,
-      customer: document.getElementById('e-customer').value,
+      initials,
+      customer,
       hoursWorked: document.getElementById('e-hours').value,
       workCompleted: document.getElementById('e-work').value,
       eodNotes: document.getElementById('e-notes').value
     };
-    if (!payload.initials || !payload.customer) return showToast("Initials & Customer required", "error");
+
+    // Attach photo if one was selected
+    if (photoBase64 && photoName) {
+      payload.photoBase64 = photoBase64;
+      payload.photoName = photoName;
+    }
+
     sendData(payload, "e-submit", "Submit End of Day", () => {
       document.getElementById('e-hours').value = "";
       document.getElementById('e-work').value = "";
       document.getElementById('e-notes').value = "";
+      // Reset photo
+      document.getElementById('e-photo').value = "";
+      document.getElementById('photo-preview').style.display = 'none';
+      document.getElementById('photo-preview').src = "";
+      document.querySelector('#photo-area .photo-upload-label').style.display = 'block';
+      photoBase64 = null;
+      photoName = null;
     });
   }
 
+  // ── Core fetch (no-cors POST — fires blind, bypasses CORS) ────────────────
   function sendData(payload, btnId, btnLabel, onSuccess) {
     const btn = document.getElementById(btnId);
     btn.disabled = true;
-    btn.innerHTML = '<span class="spinner"></span>Submitting...';
+    btn.innerHTML = '<span class="spinner"></span> Submitting…';
 
     fetch(API_URL, {
       method: "POST",
@@ -362,11 +482,11 @@
       body: JSON.stringify(payload)
     })
     .then(() => {
-      showToast("Submitted!", "success");
+      showToast("✅ Submitted!", "success");
       if (onSuccess) onSuccess();
     })
-    .catch(err => {
-      showToast("Network Error", "error");
+    .catch(() => {
+      showToast("❌ Network error — check connection", "error");
     })
     .finally(() => {
       btn.disabled = false;
@@ -378,7 +498,7 @@
     const toast = document.getElementById("toast");
     toast.textContent = msg;
     toast.className = "toast " + type + " show";
-    setTimeout(() => toast.classList.remove("show"), 3000);
+    setTimeout(() => toast.classList.remove("show"), 3500);
   }
 </script>
 
