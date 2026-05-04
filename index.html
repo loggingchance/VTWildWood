@@ -2,251 +2,331 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>Wildwood VT — Daily Report</title>
+<title>Wildwood VT</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root {
     --bark: #3B2314;
-    --bark-light: #5C3A24;
     --amber: #D4882B;
-    --amber-light: #E8A844;
-    --amber-glow: #F5C56B;
     --cream: #FAF3E8;
     --cream-dark: #EDE3D2;
-    --field-bg: #FFFFFF;
+    --white: #FFFFFF;
     --text: #2C1A0E;
     --text-mid: #6B5544;
-    --text-light: #9A8777;
     --submit-bg: #1F3528;
-    --submit-hover: #2A4A38;
     --success: #3E634D;
     --error: #9E3A3A;
-    --shadow: rgba(59, 35, 20, 0.08);
   }
 
-  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-  body { 
-    font-family: 'DM Sans', sans-serif; 
-    background-color: var(--cream); 
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  html, body {
+    width: 100%;
+    min-height: 100%;
+    background: var(--cream);
     color: var(--text);
-    margin: 0; 
-    padding: 0;
-    line-height: 1.5;
+    font-family: 'DM Sans', sans-serif;
+    -webkit-text-size-adjust: none;
+    text-size-adjust: none;
   }
 
   header {
-    background-color: var(--bark);
+    background: var(--bark);
     color: var(--cream);
-    padding: 2.5rem 1.5rem 3rem;
+    padding: 28px 20px 48px;
     text-align: center;
     position: relative;
-    overflow: hidden;
   }
-
+  header p {
+    font-size: 13px;
+    font-weight: 600;
+    opacity: 0.7;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 6px;
+  }
   header h1 {
     font-family: 'Libre Baskerville', serif;
-    font-size: 1.75rem;
-    margin: 0;
-    letter-spacing: -0.02em;
+    font-size: 38px;
+    letter-spacing: -0.5px;
   }
-
-  header p {
-    font-size: 0.9rem;
-    opacity: 0.8;
-    margin: 0.5rem 0 0;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
+  .settings-gear {
+    position: absolute;
+    top: 20px; right: 20px;
+    background: none;
+    border: none;
+    color: var(--cream);
+    opacity: 0.5;
+    font-size: 22px;
+    cursor: pointer;
+    padding: 4px;
   }
+  .settings-gear:hover { opacity: 0.9; }
 
   main {
-    max-width: 500px;
-    margin: -1.5rem auto 3rem;
-    padding: 0 1rem;
-    position: relative;
-    z-index: 2;
+    width: 100%;
+    padding: 0 12px 48px;
+    margin-top: -22px;
   }
 
   .form-card {
-    background: var(--field-bg);
-    padding: 2rem 1.5rem;
-    border-radius: 1rem;
-    box-shadow: 0 10px 25px var(--shadow);
-    margin-bottom: 1.5rem;
+    background: var(--white);
+    padding: 24px 20px;
+    border-radius: 14px;
+    box-shadow: 0 6px 24px rgba(59,35,20,0.13);
   }
 
   .tabs {
     display: flex;
-    gap: 0.5rem;
-    margin-bottom: 2rem;
+    gap: 6px;
+    margin-bottom: 28px;
     background: var(--cream-dark);
-    padding: 0.4rem;
-    border-radius: 0.75rem;
+    padding: 5px;
+    border-radius: 10px;
   }
-
   .tab-btn {
     flex: 1;
-    padding: 0.75rem;
+    padding: 16px 8px;
     border: none;
-    border-radius: 0.5rem;
+    border-radius: 7px;
     background: transparent;
     font-family: 'DM Sans', sans-serif;
     font-weight: 700;
-    font-size: 0.85rem;
+    font-size: 17px;
     color: var(--text-mid);
     cursor: pointer;
-    transition: all 0.2s;
   }
-
   .tab-btn.active {
-    background: var(--field-bg);
+    background: var(--white);
     color: var(--bark);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.09);
   }
 
   label {
     display: block;
+    font-size: 13px;
     font-weight: 700;
-    font-size: 0.85rem;
-    margin-bottom: 0.5rem;
     color: var(--bark);
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
   }
+  .field-group { margin-bottom: 22px; }
 
-  .field-group { margin-bottom: 1.5rem; }
-
-  select, input[type="text"], input[type="number"], textarea {
+  select,
+  input[type="text"],
+  input[type="number"],
+  input[type="password"],
+  textarea {
     width: 100%;
-    padding: 0.9rem 1rem;
+    padding: 16px;
     border: 2px solid var(--cream-dark);
-    border-radius: 0.75rem;
+    border-radius: 10px;
     font-family: 'DM Sans', sans-serif;
-    font-size: 1rem;
-    background: var(--field-bg);
-    transition: border-color 0.2s;
+    font-size: 19px;
+    background: var(--white);
+    color: var(--text);
     outline: none;
+    -webkit-appearance: none;
+    appearance: none;
   }
-
-  select:focus, input[type="text"]:focus, input[type="number"]:focus, textarea:focus {
-    border-color: var(--amber);
+  select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='9' viewBox='0 0 14 9'%3E%3Cpath d='M1 1l6 6 6-6' stroke='%236B5544' stroke-width='2.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 16px center;
+    padding-right: 44px;
   }
+  select:focus, input:focus, textarea:focus { border-color: var(--amber); }
+  textarea { resize: vertical; min-height: 110px; line-height: 1.5; }
 
-  /* Photo upload */
   .photo-btn-wrap { position: relative; }
   .photo-btn {
     width: 100%;
-    padding: 1rem;
+    padding: 18px;
     background: var(--amber);
     color: var(--bark);
     border: none;
-    border-radius: 0.75rem;
+    border-radius: 10px;
     font-family: 'DM Sans', sans-serif;
     font-weight: 700;
-    font-size: 1rem;
+    font-size: 19px;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 0.6rem;
-    transition: background 0.2s;
+    gap: 10px;
   }
-  .photo-btn:active { background: var(--amber-light); }
   .photo-btn-wrap input[type="file"] {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    opacity: 0;
-    cursor: pointer;
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+    opacity: 0; cursor: pointer;
   }
-  .photo-preview {
-    margin-top: 0.75rem;
-    width: 100%;
-    max-height: 200px;
-    border-radius: 0.75rem;
-    display: none;
-    object-fit: cover;
+  #photo-preview {
+    margin-top: 12px; width: 100%;
+    max-height: 220px; border-radius: 10px;
+    display: none; object-fit: cover;
     border: 2px solid var(--cream-dark);
   }
-  .photo-name {
-    margin-top: 0.4rem;
-    font-size: 0.8rem;
-    color: var(--success);
-    font-weight: 600;
-    display: none;
-    text-align: center;
+  #photo-name {
+    margin-top: 8px; font-size: 16px;
+    color: var(--success); font-weight: 600;
+    display: none; text-align: center;
   }
 
   .submit-btn {
     width: 100%;
-    padding: 1.1rem;
+    padding: 20px;
     background: var(--submit-bg);
     color: white;
     border: none;
-    border-radius: 0.75rem;
+    border-radius: 10px;
     font-family: 'DM Sans', sans-serif;
     font-weight: 700;
-    font-size: 1rem;
+    font-size: 20px;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 0.75rem;
-    transition: transform 0.1s, background 0.2s;
+    gap: 12px;
+    margin-top: 8px;
   }
+  .submit-btn:active { opacity: 0.82; }
+  .submit-btn:disabled { opacity: 0.55; cursor: not-allowed; }
 
-  .submit-btn:active { transform: scale(0.98); }
-  .submit-btn:disabled { opacity: 0.6; cursor: not-allowed; }
-
-  #connection-error {
+  /* Settings overlay */
+  .overlay {
     display: none;
-    background: #FFF0F0;
-    border: 1px solid var(--error);
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.55);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .overlay.open { display: flex; }
+  .overlay-card {
+    background: var(--white);
+    border-radius: 14px;
+    padding: 28px 24px;
+    width: 100%;
+    max-width: 420px;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.25);
+  }
+  .overlay-card h2 {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 22px;
+    color: var(--bark);
+    margin-bottom: 20px;
+  }
+  .overlay-card .hint {
+    font-size: 14px;
+    color: var(--text-mid);
+    margin-bottom: 16px;
+    line-height: 1.5;
+  }
+  .client-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .client-row input {
+    flex: 1;
+    padding: 12px 14px;
+    font-size: 17px;
+  }
+  .del-btn {
+    background: none;
+    border: 2px solid var(--cream-dark);
+    border-radius: 8px;
     color: var(--error);
-    padding: 1rem;
-    border-radius: 0.75rem;
-    margin-bottom: 1.5rem;
-    font-size: 0.9rem;
-    font-weight: 500;
+    font-size: 20px;
+    width: 44px; height: 44px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .add-client-btn {
+    width: 100%;
+    padding: 14px;
+    background: var(--cream);
+    border: 2px dashed var(--cream-dark);
+    border-radius: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 700;
+    font-size: 16px;
+    color: var(--text-mid);
+    cursor: pointer;
+    margin-top: 4px;
+    margin-bottom: 20px;
+  }
+  .save-clients-btn {
+    width: 100%;
+    padding: 18px;
+    background: var(--submit-bg);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 700;
+    font-size: 18px;
+    cursor: pointer;
+    margin-bottom: 10px;
+  }
+  .cancel-btn {
+    width: 100%;
+    padding: 14px;
+    background: none;
+    border: 2px solid var(--cream-dark);
+    border-radius: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+    color: var(--text-mid);
+    cursor: pointer;
+  }
+  .pin-error {
+    color: var(--error);
+    font-size: 14px;
+    font-weight: 600;
+    margin-top: 8px;
+    display: none;
     text-align: center;
   }
 
   .spinner {
-    width: 20px;
-    height: 20px;
+    width: 24px; height: 24px;
     border: 3px solid rgba(255,255,255,0.3);
     border-top-color: #fff;
     border-radius: 50%;
     animation: spin 0.8s linear infinite;
     flex-shrink: 0;
   }
-
   @keyframes spin { to { transform: rotate(360deg); } }
 
   .toast {
     position: fixed;
-    bottom: 2rem;
-    left: 50%;
-    transform: translateX(-50%) translateY(100px);
-    padding: 1rem 2rem;
-    border-radius: 3rem;
+    bottom: 32px; left: 50%;
+    transform: translateX(-50%) translateY(120px);
+    padding: 16px 28px;
+    border-radius: 50px;
     color: white;
     font-weight: 600;
+    font-size: 17px;
     z-index: 9999;
     transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-    text-align: center;
+    box-shadow: 0 8px 28px rgba(0,0,0,0.22);
     max-width: 90vw;
+    text-align: center;
   }
   .toast.show { transform: translateX(-50%) translateY(0); }
   .toast.success { background: var(--success); }
-  .toast.error { background: var(--error); }
-
+  .toast.error   { background: var(--error); }
   .hidden { display: none; }
 </style>
 </head>
@@ -255,30 +335,30 @@
 <header>
   <p>Operation Log</p>
   <h1>Wildwood VT</h1>
+  <button class="settings-gear" onclick="openSettings()" title="Settings">⚙️</button>
 </header>
 
 <main>
-<div class="form-card">
+  <div class="form-card">
     <div class="tabs">
-      <button class="tab-btn active" id="tab-morning" onclick="switchTab('morning', this)">Morning Plan</button>
-      <button class="tab-btn" id="tab-eod" onclick="switchTab('eod', this)">End of Day</button>
+      <button class="tab-btn active" onclick="switchTab('morning', this)">Morning Plan</button>
+      <button class="tab-btn" onclick="switchTab('eod', this)">End of Day</button>
     </div>
 
     <!-- MORNING FORM -->
     <div id="morning-form">
       <div class="field-group">
         <label>Your Initials</label>
-        <input type="text" id="m-initials" placeholder="e.g. JB" maxlength="3" autocomplete="off">
+        <input type="text" id="m-initials" placeholder="e.g. JB" maxlength="3"
+               autocomplete="off" autocorrect="off" autocapitalize="characters">
       </div>
       <div class="field-group">
         <label>Customer / Job</label>
-        <select id="m-customer">
-          <option value="">Loading customers...</option>
-        </select>
+        <select id="m-customer"><option value="">-- Select Customer --</option></select>
       </div>
       <div class="field-group">
         <label>Planned Hours</label>
-        <input type="number" id="m-hours" placeholder="0.0" step="0.5" min="0">
+        <input type="number" id="m-hours" placeholder="0.0" step="0.5" min="0" inputmode="decimal">
       </div>
       <div class="field-group">
         <label>Planned Work</label>
@@ -291,17 +371,16 @@
     <div id="eod-form" class="hidden">
       <div class="field-group">
         <label>Your Initials</label>
-        <input type="text" id="e-initials" placeholder="e.g. JB" maxlength="3" autocomplete="off">
+        <input type="text" id="e-initials" placeholder="e.g. JB" maxlength="3"
+               autocomplete="off" autocorrect="off" autocapitalize="characters">
       </div>
       <div class="field-group">
         <label>Customer / Job</label>
-        <select id="e-customer">
-          <option value="">Loading customers...</option>
-        </select>
+        <select id="e-customer"><option value="">-- Select Customer --</option></select>
       </div>
       <div class="field-group">
         <label>Actual Hours Worked</label>
-        <input type="number" id="e-hours" placeholder="0.0" step="0.5" min="0">
+        <input type="number" id="e-hours" placeholder="0.0" step="0.5" min="0" inputmode="decimal">
       </div>
       <div class="field-group">
         <label>Work Completed</label>
@@ -317,41 +396,81 @@
           <input type="file" id="e-photo" accept="image/*" onchange="handlePhotoSelect(this)">
           <button class="photo-btn" type="button">📷 &nbsp;Add Photo from Library</button>
         </div>
-        <img id="photo-preview" class="photo-preview" alt="Preview">
-        <div class="photo-name" id="photo-name"></div>
+        <img id="photo-preview" alt="Preview">
+        <div id="photo-name"></div>
       </div>
       <button class="submit-btn" id="e-submit" onclick="submitEOD()">Submit End of Day</button>
     </div>
   </div>
 </main>
 
+<!-- SETTINGS OVERLAY -->
+<div class="overlay" id="settings-overlay">
+  <div class="overlay-card">
+
+    <!-- PIN screen -->
+    <div id="pin-screen">
+      <h2>Settings</h2>
+      <p class="hint">Enter PIN to manage the client list.</p>
+      <div class="field-group">
+        <label>PIN</label>
+        <input type="password" id="pin-input" placeholder="••••" maxlength="4" inputmode="numeric"
+               onkeydown="if(event.key==='Enter') checkPin()">
+      </div>
+      <div class="pin-error" id="pin-error">Incorrect PIN</div>
+      <button class="save-clients-btn" onclick="checkPin()">Unlock</button>
+      <button class="cancel-btn" onclick="closeSettings()">Cancel</button>
+    </div>
+
+    <!-- Client editor (shown after PIN) -->
+    <div id="client-editor" class="hidden">
+      <h2>Client List</h2>
+      <p class="hint">One client per row. Changes take effect immediately.</p>
+      <div id="client-rows"></div>
+      <button class="add-client-btn" onclick="addClientRow('')">+ Add Client</button>
+      <button class="save-clients-btn" onclick="saveClients()">Save & Close</button>
+      <button class="cancel-btn" onclick="closeSettings()">Cancel</button>
+    </div>
+
+  </div>
+</div>
+
 <div id="toast" class="toast"></div>
 
 <script>
-  // ─── UPDATE THIS URL if you redeploy the Apps Script ───────────────────────
-  const API_URL = "https://script.google.com/macros/s/AKfycbwLC7N5Mh5KEn7E2OJ3Crw-lg1kc7_bXmXfnDBS7z8JThL_f0act2xsG6sHRuZJVgr9/exec";
-  // ───────────────────────────────────────────────────────────────────────────
+  // ── API endpoint ──────────────────────────────────────────────────────────
+  var API_URL = "https://script.google.com/macros/s/AKfycbwLC7N5Mh5KEn7E2OJ3Crw-lg1kc7_bXmXfnDBS7z8JThL_f0act2xsG6sHRuZJVgr9/exec";
 
-  let photoBase64 = null;
-  let photoName = null;
+  // ── Default clients (used only if localStorage is empty) ─────────────────
+  var DEFAULT_CLIENTS = ["Nancy", "Bucky", "Ludlow", "Fortin", "Goodsell"];
 
-  // Client list — update this array when customers change
-  const CLIENTS = ["Nancy", "Bucky", "Ludlow", "Fortin", "Goodsell"];
+  var photoBase64 = null;
+  var photoName   = null;
 
-  window.onload = function() {
-    const selects = [document.getElementById('m-customer'), document.getElementById('e-customer')];
-    selects.forEach(sel => {
+  // ── Load clients from localStorage ───────────────────────────────────────
+  function getClients() {
+    var stored = localStorage.getItem('wv_clients');
+    return stored ? JSON.parse(stored) : DEFAULT_CLIENTS;
+  }
+
+  function populateSelects() {
+    var clients = getClients();
+    var selects = [document.getElementById('m-customer'), document.getElementById('e-customer')];
+    selects.forEach(function(sel) {
       sel.innerHTML = '<option value="">-- Select Customer --</option>';
-      CLIENTS.forEach(c => {
-        const opt = document.createElement('option');
+      clients.forEach(function(c) {
+        var opt = document.createElement('option');
         opt.value = opt.textContent = c;
         sel.appendChild(opt);
       });
     });
-  };
+  }
 
+  window.onload = populateSelects;
+
+  // ── Tab switching ─────────────────────────────────────────────────────────
   function switchTab(type, btn) {
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
     btn.classList.add('active');
     if (type === 'morning') {
       document.getElementById('morning-form').classList.remove('hidden');
@@ -362,125 +481,177 @@
     }
   }
 
+  // ── Settings / PIN ────────────────────────────────────────────────────────
+  function openSettings() {
+    document.getElementById('pin-input').value = '';
+    document.getElementById('pin-error').style.display = 'none';
+    document.getElementById('pin-screen').classList.remove('hidden');
+    document.getElementById('client-editor').classList.add('hidden');
+    document.getElementById('settings-overlay').classList.add('open');
+    setTimeout(function() { document.getElementById('pin-input').focus(); }, 100);
+  }
+
+  function closeSettings() {
+    document.getElementById('settings-overlay').classList.remove('open');
+  }
+
+  function checkPin() {
+    var pin = document.getElementById('pin-input').value.trim();
+    if (pin === '1802') {
+      document.getElementById('pin-screen').classList.add('hidden');
+      document.getElementById('client-editor').classList.remove('hidden');
+      renderClientRows();
+    } else {
+      document.getElementById('pin-error').style.display = 'block';
+      document.getElementById('pin-input').value = '';
+      document.getElementById('pin-input').focus();
+    }
+  }
+
+  function renderClientRows() {
+    var clients = getClients();
+    var container = document.getElementById('client-rows');
+    container.innerHTML = '';
+    clients.forEach(function(c) { addClientRow(c); });
+  }
+
+  function addClientRow(value) {
+    var container = document.getElementById('client-rows');
+    var row = document.createElement('div');
+    row.className = 'client-row';
+    var inp = document.createElement('input');
+    inp.type = 'text';
+    inp.value = value;
+    inp.placeholder = 'Client name';
+    var del = document.createElement('button');
+    del.className = 'del-btn';
+    del.innerHTML = '×';
+    del.onclick = function() { container.removeChild(row); };
+    row.appendChild(inp);
+    row.appendChild(del);
+    container.appendChild(row);
+    if (!value) inp.focus();
+  }
+
+  function saveClients() {
+    var rows = document.querySelectorAll('#client-rows .client-row input');
+    var clients = [];
+    rows.forEach(function(inp) {
+      var val = inp.value.trim();
+      if (val) clients.push(val);
+    });
+    if (clients.length === 0) return showToast("Add at least one client", "error");
+    localStorage.setItem('wv_clients', JSON.stringify(clients));
+    populateSelects();
+    closeSettings();
+    showToast("✅ Client list saved", "success");
+  }
+
   // ── Photo handling ────────────────────────────────────────────────────────
   function handlePhotoSelect(input) {
-    const file = input.files[0];
+    var file = input.files[0];
     if (!file) return;
-
     photoName = "wildwood_" + Date.now() + ".jpg";
-    const reader = new FileReader();
+    var reader = new FileReader();
     reader.onload = function(e) {
-      const img = new Image();
+      var img = new Image();
       img.onload = function() {
-        const MAX = 1024;
-        let w = img.width, h = img.height;
+        var MAX = 1024, w = img.width, h = img.height;
         if (w > MAX || h > MAX) {
           if (w > h) { h = Math.round(h * MAX / w); w = MAX; }
           else       { w = Math.round(w * MAX / h); h = MAX; }
         }
-        const canvas = document.createElement('canvas');
+        var canvas = document.createElement('canvas');
         canvas.width = w; canvas.height = h;
         canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-        const dataUrl = canvas.toDataURL('image/jpeg', 0.75);
+        var dataUrl = canvas.toDataURL('image/jpeg', 0.75);
         photoBase64 = dataUrl.split(',')[1];
-        const preview = document.getElementById('photo-preview');
-        preview.src = dataUrl;
-        preview.style.display = 'block';
-        const nameEl = document.getElementById('photo-name');
-        nameEl.textContent = "✅ " + file.name;
-        nameEl.style.display = 'block';
+        var preview = document.getElementById('photo-preview');
+        preview.src = dataUrl; preview.style.display = 'block';
+        var nameEl = document.getElementById('photo-name');
+        nameEl.textContent = "✅ " + file.name; nameEl.style.display = 'block';
       };
       img.src = e.target.result;
     };
     reader.readAsDataURL(file);
   }
 
-  // ── Form submissions ──────────────────────────────────────────────────────
+  // ── Submissions ───────────────────────────────────────────────────────────
   function submitMorning() {
-    const initials = document.getElementById('m-initials').value.trim();
-    const customer = document.getElementById('m-customer').value;
+    var initials = document.getElementById('m-initials').value.trim();
+    var customer = document.getElementById('m-customer').value;
     if (!initials || !customer) return showToast("Initials & Customer required", "error");
-
-    const payload = {
-      action: "morning",
-      initials,
-      customer,
-      plannedHours: document.getElementById('m-hours').value,
-      plannedWork: document.getElementById('m-work').value
-    };
-
-    sendData(payload, "m-submit", "Submit Plan", () => {
+    setLoading('m-submit', true);
+    fetch(API_URL, {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "text/plain" },
+      body: JSON.stringify({
+        action:       "morning",
+        initials:     initials,
+        customer:     customer,
+        plannedHours: document.getElementById('m-hours').value,
+        plannedWork:  document.getElementById('m-work').value
+      })
+    })
+    .then(function() {
+      showToast("✅ Morning plan submitted!", "success");
       document.getElementById('m-hours').value = "";
-      document.getElementById('m-work').value = "";
-    });
+      document.getElementById('m-work').value  = "";
+    })
+    .catch(function() { showToast("❌ Network error", "error"); })
+    .finally(function() { setLoading('m-submit', false, "Submit Plan"); });
   }
 
   function submitEOD() {
-    const initials = document.getElementById('e-initials').value.trim();
-    const customer = document.getElementById('e-customer').value;
+    var initials = document.getElementById('e-initials').value.trim();
+    var customer = document.getElementById('e-customer').value;
     if (!initials || !customer) return showToast("Initials & Customer required", "error");
-
-    const payload = {
-      action: "eod",
-      initials,
-      customer,
-      hoursWorked: document.getElementById('e-hours').value,
+    setLoading('e-submit', true);
+    var payload = {
+      action:        "eod",
+      initials:      initials,
+      customer:      customer,
+      hoursWorked:   document.getElementById('e-hours').value,
       workCompleted: document.getElementById('e-work').value,
-      eodNotes: document.getElementById('e-notes').value
+      eodNotes:      document.getElementById('e-notes').value
     };
-
-    // Attach photo if one was selected
     if (photoBase64 && photoName) {
       payload.photoBase64 = photoBase64;
-      payload.photoName = photoName;
+      payload.photoName   = photoName;
     }
-
-    sendData(payload, "e-submit", "Submit End of Day", () => {
-      document.getElementById('e-hours').value = "";
-      document.getElementById('e-work').value = "";
-      document.getElementById('e-notes').value = "";
-      // Reset photo
-      document.getElementById('e-photo').value = "";
-      document.getElementById('photo-preview').style.display = 'none';
-      document.getElementById('photo-preview').src = "";
-      document.getElementById('photo-name').style.display = 'none';
-      photoBase64 = null;
-      photoName = null;
-    });
-  }
-
-  // ── Core fetch (no-cors POST — fires blind, bypasses CORS) ────────────────
-  function sendData(payload, btnId, btnLabel, onSuccess) {
-    const btn = document.getElementById(btnId);
-    btn.disabled = true;
-    btn.innerHTML = '<span class="spinner"></span> Submitting…';
-
     fetch(API_URL, {
       method: "POST",
       mode: "no-cors",
       headers: { "Content-Type": "text/plain" },
       body: JSON.stringify(payload)
     })
-    .then(() => {
-      showToast("✅ Submitted!", "success");
-      if (onSuccess) onSuccess();
+    .then(function() {
+      showToast("✅ End of day submitted!", "success");
+      document.getElementById('e-hours').value = "";
+      document.getElementById('e-work').value  = "";
+      document.getElementById('e-notes').value = "";
+      document.getElementById('e-photo').value = "";
+      document.getElementById('photo-preview').style.display = 'none';
+      document.getElementById('photo-name').style.display    = 'none';
+      photoBase64 = null; photoName = null;
     })
-    .catch(() => {
-      showToast("❌ Network error — check connection", "error");
-    })
-    .finally(() => {
-      btn.disabled = false;
-      btn.textContent = btnLabel;
-    });
+    .catch(function() { showToast("❌ Network error", "error"); })
+    .finally(function() { setLoading('e-submit', false, "Submit End of Day"); });
+  }
+
+  function setLoading(btnId, loading, label) {
+    var btn = document.getElementById(btnId);
+    btn.disabled = loading;
+    btn.innerHTML = loading ? '<span class="spinner"></span> Submitting…' : label;
   }
 
   function showToast(msg, type) {
-    const toast = document.getElementById("toast");
+    var toast = document.getElementById("toast");
     toast.textContent = msg;
     toast.className = "toast " + type + " show";
-    setTimeout(() => toast.classList.remove("show"), 3500);
+    setTimeout(function() { toast.classList.remove("show"); }, 3500);
   }
 </script>
-
 </body>
 </html>
