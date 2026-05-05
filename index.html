@@ -606,33 +606,34 @@
     localStorage.setItem('wv_emails',  JSON.stringify(emails));
     populateSelects();
 
-    // Sync to Google Sheet via Apps Script
+    // Sync to sheet via GET (bypasses CORS redirect)
     var btn = document.getElementById('save-settings-btn');
     btn.disabled = true;
     btn.textContent = 'Saving…';
 
-    fetch(API_URL, {
-      method: "POST",
-      mode: "no-cors",
-      headers: { "Content-Type": "text/plain" },
-      body: JSON.stringify({
-        action:  "saveSettings",
-        clients: clients,
-        emails:  emails
-      })
-    })
-    .then(function() {
+    var url = API_URL
+      + "?action=saveSettings"
+      + "&clients=" + encodeURIComponent(JSON.stringify(clients))
+      + "&emails="  + encodeURIComponent(JSON.stringify(emails))
+      + "&t=" + Date.now();
+
+    var script = document.createElement('script');
+    script.src = url;
+    script.onload = function() {
       showToast("✅ Settings saved & synced", "success");
       closeSettings();
-    })
-    .catch(function() {
-      showToast("✅ Saved locally — sheet sync failed", "error");
-      closeSettings();
-    })
-    .finally(function() {
       btn.disabled = false;
       btn.textContent = 'Save & Sync to Sheet';
-    });
+      document.body.removeChild(script);
+    };
+    script.onerror = function() {
+      showToast("✅ Saved locally — sheet sync failed", "error");
+      closeSettings();
+      btn.disabled = false;
+      btn.textContent = 'Save & Sync to Sheet';
+      document.body.removeChild(script);
+    };
+    document.body.appendChild(script);
   }
 
   /* ── Photo handling ───────────────────────────────────────────────────── */
