@@ -610,6 +610,8 @@
     btn.disabled = true;
     btn.textContent = 'Saving…';
 
+    alert("Sending emails: " + JSON.stringify(emails) + "\nClients: " + JSON.stringify(clients));
+
     fetch(API_URL, {
       method: "POST",
       mode: "no-cors",
