@@ -120,6 +120,7 @@
   select,
   input[type="text"],
   input[type="number"],
+  input[type="email"],
   input[type="password"],
   textarea {
     width: 100%;
@@ -197,45 +198,59 @@
   .submit-btn:active { opacity: 0.82; }
   .submit-btn:disabled { opacity: 0.55; cursor: not-allowed; }
 
-  /* Settings overlay */
+  /* ── Settings overlay ── */
   .overlay {
     display: none;
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.55);
-    z-index: 100;
-    align-items: center;
+    background: rgba(0,0,0,0.6);
+    z-index: 200;
+    align-items: flex-start;
     justify-content: center;
-    padding: 20px;
+    padding: 16px;
+    overflow-y: auto;
   }
   .overlay.open { display: flex; }
   .overlay-card {
     background: var(--white);
     border-radius: 14px;
-    padding: 28px 24px;
+    padding: 28px 22px;
     width: 100%;
-    max-width: 420px;
-    box-shadow: 0 12px 40px rgba(0,0,0,0.25);
+    max-width: 460px;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.28);
+    margin: auto;
   }
   .overlay-card h2 {
     font-family: 'Libre Baskerville', serif;
     font-size: 22px;
     color: var(--bark);
-    margin-bottom: 20px;
+    margin-bottom: 6px;
   }
-  .overlay-card .hint {
+  .section-label {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--bark);
+    margin: 20px 0 10px;
+    padding-bottom: 6px;
+    border-bottom: 2px solid var(--cream-dark);
+  }
+  .hint {
     font-size: 14px;
     color: var(--text-mid);
-    margin-bottom: 16px;
+    margin-bottom: 14px;
     line-height: 1.5;
   }
-  .client-row {
+
+  /* client rows */
+  .client-row, .email-row {
     display: flex;
     align-items: center;
-    gap: 10px;
-    margin-bottom: 10px;
+    gap: 8px;
+    margin-bottom: 8px;
   }
-  .client-row input {
+  .client-row input, .email-row input {
     flex: 1;
     padding: 12px 14px;
     font-size: 17px;
@@ -246,26 +261,27 @@
     border-radius: 8px;
     color: var(--error);
     font-size: 20px;
-    width: 44px; height: 44px;
+    width: 46px; height: 46px;
     cursor: pointer;
     display: flex; align-items: center; justify-content: center;
     flex-shrink: 0;
   }
-  .add-client-btn {
+  .add-row-btn {
     width: 100%;
-    padding: 14px;
+    padding: 13px;
     background: var(--cream);
     border: 2px dashed var(--cream-dark);
     border-radius: 10px;
     font-family: 'DM Sans', sans-serif;
     font-weight: 700;
-    font-size: 16px;
+    font-size: 15px;
     color: var(--text-mid);
     cursor: pointer;
     margin-top: 4px;
-    margin-bottom: 20px;
+    margin-bottom: 4px;
   }
-  .save-clients-btn {
+
+  .save-btn {
     width: 100%;
     padding: 18px;
     background: var(--submit-bg);
@@ -276,6 +292,7 @@
     font-weight: 700;
     font-size: 18px;
     cursor: pointer;
+    margin-top: 20px;
     margin-bottom: 10px;
   }
   .cancel-btn {
@@ -411,24 +428,32 @@
     <!-- PIN screen -->
     <div id="pin-screen">
       <h2>Settings</h2>
-      <p class="hint">Enter PIN to manage the client list.</p>
+      <p class="hint">Enter PIN to manage settings.</p>
       <div class="field-group">
         <label>PIN</label>
         <input type="password" id="pin-input" placeholder="••••" maxlength="4" inputmode="numeric"
                onkeydown="if(event.key==='Enter') checkPin()">
       </div>
       <div class="pin-error" id="pin-error">Incorrect PIN</div>
-      <button class="save-clients-btn" onclick="checkPin()">Unlock</button>
+      <button class="save-btn" onclick="checkPin()">Unlock</button>
       <button class="cancel-btn" onclick="closeSettings()">Cancel</button>
     </div>
 
-    <!-- Client editor (shown after PIN) -->
-    <div id="client-editor" class="hidden">
-      <h2>Client List</h2>
-      <p class="hint">One client per row. Changes take effect immediately.</p>
+    <!-- Editor (shown after PIN) -->
+    <div id="settings-editor" class="hidden">
+      <h2>Settings</h2>
+
+      <div class="section-label">Client / Project List</div>
+      <p class="hint">Changes save to the app and sync to the Google Sheet.</p>
       <div id="client-rows"></div>
-      <button class="add-client-btn" onclick="addClientRow('')">+ Add Client</button>
-      <button class="save-clients-btn" onclick="saveClients()">Save & Close</button>
+      <button class="add-row-btn" onclick="addClientRow('')">+ Add Client</button>
+
+      <div class="section-label">Report Email Recipients</div>
+      <p class="hint">Up to 6 addresses. Daily report sends at 7 PM.</p>
+      <div id="email-rows"></div>
+      <button class="add-row-btn" id="add-email-btn" onclick="addEmailRow('')">+ Add Email</button>
+
+      <button class="save-btn" id="save-settings-btn" onclick="saveSettings()">Save & Sync to Sheet</button>
       <button class="cancel-btn" onclick="closeSettings()">Cancel</button>
     </div>
 
@@ -438,25 +463,25 @@
 <div id="toast" class="toast"></div>
 
 <script>
-  // ── API endpoint ──────────────────────────────────────────────────────────
   var API_URL = "https://script.google.com/macros/s/AKfycbwLC7N5Mh5KEn7E2OJ3Crw-lg1kc7_bXmXfnDBS7z8JThL_f0act2xsG6sHRuZJVgr9/exec";
-
-  // ── Default clients (used only if localStorage is empty) ─────────────────
   var DEFAULT_CLIENTS = ["Nancy", "Bucky", "Ludlow", "Fortin", "Goodsell"];
-
   var photoBase64 = null;
   var photoName   = null;
 
-  // ── Load clients from localStorage ───────────────────────────────────────
+  /* ── localStorage helpers ─────────────────────────────────────────────── */
   function getClients() {
-    var stored = localStorage.getItem('wv_clients');
-    return stored ? JSON.parse(stored) : DEFAULT_CLIENTS;
+    var s = localStorage.getItem('wv_clients');
+    return s ? JSON.parse(s) : DEFAULT_CLIENTS;
+  }
+  function getEmails() {
+    var s = localStorage.getItem('wv_emails');
+    return s ? JSON.parse(s) : [];
   }
 
   function populateSelects() {
     var clients = getClients();
-    var selects = [document.getElementById('m-customer'), document.getElementById('e-customer')];
-    selects.forEach(function(sel) {
+    ['m-customer','e-customer'].forEach(function(id) {
+      var sel = document.getElementById(id);
       sel.innerHTML = '<option value="">-- Select Customer --</option>';
       clients.forEach(function(c) {
         var opt = document.createElement('option');
@@ -468,7 +493,7 @@
 
   window.onload = populateSelects;
 
-  // ── Tab switching ─────────────────────────────────────────────────────────
+  /* ── Tab switching ────────────────────────────────────────────────────── */
   function switchTab(type, btn) {
     document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
     btn.classList.add('active');
@@ -481,14 +506,14 @@
     }
   }
 
-  // ── Settings / PIN ────────────────────────────────────────────────────────
+  /* ── Settings overlay ─────────────────────────────────────────────────── */
   function openSettings() {
     document.getElementById('pin-input').value = '';
     document.getElementById('pin-error').style.display = 'none';
     document.getElementById('pin-screen').classList.remove('hidden');
-    document.getElementById('client-editor').classList.add('hidden');
+    document.getElementById('settings-editor').classList.add('hidden');
     document.getElementById('settings-overlay').classList.add('open');
-    setTimeout(function() { document.getElementById('pin-input').focus(); }, 100);
+    setTimeout(function() { document.getElementById('pin-input').focus(); }, 120);
   }
 
   function closeSettings() {
@@ -496,11 +521,11 @@
   }
 
   function checkPin() {
-    var pin = document.getElementById('pin-input').value.trim();
-    if (pin === '1802') {
+    if (document.getElementById('pin-input').value.trim() === '1802') {
       document.getElementById('pin-screen').classList.add('hidden');
-      document.getElementById('client-editor').classList.remove('hidden');
+      document.getElementById('settings-editor').classList.remove('hidden');
       renderClientRows();
+      renderEmailRows();
     } else {
       document.getElementById('pin-error').style.display = 'block';
       document.getElementById('pin-input').value = '';
@@ -508,11 +533,11 @@
     }
   }
 
+  /* ── Client rows ──────────────────────────────────────────────────────── */
   function renderClientRows() {
-    var clients = getClients();
     var container = document.getElementById('client-rows');
     container.innerHTML = '';
-    clients.forEach(function(c) { addClientRow(c); });
+    getClients().forEach(function(c) { addClientRow(c); });
   }
 
   function addClientRow(value) {
@@ -522,32 +547,95 @@
     var inp = document.createElement('input');
     inp.type = 'text';
     inp.value = value;
-    inp.placeholder = 'Client name';
+    inp.placeholder = 'Client / project name';
     var del = document.createElement('button');
     del.className = 'del-btn';
-    del.innerHTML = '×';
+    del.innerHTML = '&times;';
     del.onclick = function() { container.removeChild(row); };
-    row.appendChild(inp);
-    row.appendChild(del);
+    row.appendChild(inp); row.appendChild(del);
     container.appendChild(row);
     if (!value) inp.focus();
   }
 
-  function saveClients() {
-    var rows = document.querySelectorAll('#client-rows .client-row input');
-    var clients = [];
-    rows.forEach(function(inp) {
-      var val = inp.value.trim();
-      if (val) clients.push(val);
-    });
-    if (clients.length === 0) return showToast("Add at least one client", "error");
-    localStorage.setItem('wv_clients', JSON.stringify(clients));
-    populateSelects();
-    closeSettings();
-    showToast("✅ Client list saved", "success");
+  /* ── Email rows ───────────────────────────────────────────────────────── */
+  function renderEmailRows() {
+    var container = document.getElementById('email-rows');
+    container.innerHTML = '';
+    getEmails().forEach(function(e) { addEmailRow(e); });
   }
 
-  // ── Photo handling ────────────────────────────────────────────────────────
+  function addEmailRow(value) {
+    var container = document.getElementById('email-rows');
+    if (container.children.length >= 6) {
+      showToast("Maximum 6 email addresses", "error");
+      return;
+    }
+    var row = document.createElement('div');
+    row.className = 'email-row';
+    var inp = document.createElement('input');
+    inp.type = 'email';
+    inp.value = value;
+    inp.placeholder = 'name@example.com';
+    inp.inputMode = 'email';
+    var del = document.createElement('button');
+    del.className = 'del-btn';
+    del.innerHTML = '&times;';
+    del.onclick = function() { container.removeChild(row); };
+    row.appendChild(inp); row.appendChild(del);
+    container.appendChild(row);
+    if (!value) inp.focus();
+  }
+
+  /* ── Save settings ────────────────────────────────────────────────────── */
+  function saveSettings() {
+    var clients = [];
+    document.querySelectorAll('#client-rows .client-row input').forEach(function(inp) {
+      var v = inp.value.trim();
+      if (v) clients.push(v);
+    });
+    if (clients.length === 0) return showToast("Add at least one client", "error");
+
+    var emails = [];
+    document.querySelectorAll('#email-rows .email-row input').forEach(function(inp) {
+      var v = inp.value.trim();
+      if (v) emails.push(v);
+    });
+
+    // Save to localStorage immediately
+    localStorage.setItem('wv_clients', JSON.stringify(clients));
+    localStorage.setItem('wv_emails',  JSON.stringify(emails));
+    populateSelects();
+
+    // Sync to Google Sheet via Apps Script
+    var btn = document.getElementById('save-settings-btn');
+    btn.disabled = true;
+    btn.textContent = 'Saving…';
+
+    fetch(API_URL, {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "text/plain" },
+      body: JSON.stringify({
+        action:  "saveSettings",
+        clients: clients,
+        emails:  emails
+      })
+    })
+    .then(function() {
+      showToast("✅ Settings saved & synced", "success");
+      closeSettings();
+    })
+    .catch(function() {
+      showToast("✅ Saved locally — sheet sync failed", "error");
+      closeSettings();
+    })
+    .finally(function() {
+      btn.disabled = false;
+      btn.textContent = 'Save & Sync to Sheet';
+    });
+  }
+
+  /* ── Photo handling ───────────────────────────────────────────────────── */
   function handlePhotoSelect(input) {
     var file = input.files[0];
     if (!file) return;
@@ -576,20 +664,17 @@
     reader.readAsDataURL(file);
   }
 
-  // ── Submissions ───────────────────────────────────────────────────────────
+  /* ── Submissions ──────────────────────────────────────────────────────── */
   function submitMorning() {
     var initials = document.getElementById('m-initials').value.trim();
     var customer = document.getElementById('m-customer').value;
     if (!initials || !customer) return showToast("Initials & Customer required", "error");
     setLoading('m-submit', true);
     fetch(API_URL, {
-      method: "POST",
-      mode: "no-cors",
+      method: "POST", mode: "no-cors",
       headers: { "Content-Type": "text/plain" },
       body: JSON.stringify({
-        action:       "morning",
-        initials:     initials,
-        customer:     customer,
+        action: "morning", initials: initials, customer: customer,
         plannedHours: document.getElementById('m-hours').value,
         plannedWork:  document.getElementById('m-work').value
       })
@@ -609,9 +694,7 @@
     if (!initials || !customer) return showToast("Initials & Customer required", "error");
     setLoading('e-submit', true);
     var payload = {
-      action:        "eod",
-      initials:      initials,
-      customer:      customer,
+      action: "eod", initials: initials, customer: customer,
       hoursWorked:   document.getElementById('e-hours').value,
       workCompleted: document.getElementById('e-work').value,
       eodNotes:      document.getElementById('e-notes').value
@@ -621,8 +704,7 @@
       payload.photoName   = photoName;
     }
     fetch(API_URL, {
-      method: "POST",
-      mode: "no-cors",
+      method: "POST", mode: "no-cors",
       headers: { "Content-Type": "text/plain" },
       body: JSON.stringify(payload)
     })
@@ -640,6 +722,7 @@
     .finally(function() { setLoading('e-submit', false, "Submit End of Day"); });
   }
 
+  /* ── Helpers ──────────────────────────────────────────────────────────── */
   function setLoading(btnId, loading, label) {
     var btn = document.getElementById(btnId);
     btn.disabled = loading;
