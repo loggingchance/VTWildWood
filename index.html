@@ -464,11 +464,13 @@
 
 <script>
   var API_URL = "https://script.google.com/macros/s/AKfycbyeNDwkrsYYBeNpak6UWwP6LB7rBap_PtqBMI8ZSA3liN_lMcM_I1qOhu_BV1ixW2yr/exec";
-  var DEFAULT_CLIENTS = ["Nancy", "Bucky", "Ludlow", "Fortin", "Goodsell"];
+  var DEFAULT_CLIENTS = ["McKibben", "Green", "Shipman Stowe", "Shipman Shelburne", "Russin", "Ritchie"];
   var photoBase64 = null;
   var photoName   = null;
 
   /* ── localStorage helpers ─────────────────────────────────────────────── */
+  var CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vStge_lGux06yBspyJtVFp8BGeNRqAz0ZyLAn8HYozh6Tl2t9EqsErtOOcGU4KhCbC0O4UNNi5euxFW/pub?gid=1971708774&single=true&output=csv";
+
   function getClients() {
     var s = localStorage.getItem('wv_clients');
     return s ? JSON.parse(s) : DEFAULT_CLIENTS;
@@ -478,8 +480,7 @@
     return s ? JSON.parse(s) : [];
   }
 
-  function populateSelects() {
-    var clients = getClients();
+  function populateSelects(clients) {
     ['m-customer','e-customer'].forEach(function(id) {
       var sel = document.getElementById(id);
       sel.innerHTML = '<option value="">-- Select Customer --</option>';
@@ -491,7 +492,32 @@
     });
   }
 
-  window.onload = populateSelects;
+  function loadClientsFromSheet() {
+    fetch(CSV_URL + "&t=" + Date.now())
+      .then(function(r) { return r.text(); })
+      .then(function(csv) {
+        // Parse column B (index 1) from rows 19+ (index 18+)
+        var rows = csv.split("\n");
+        var clients = [];
+        for (var i = 18; i < rows.length; i++) {
+          var cols = rows[i].split(",");
+          var val = cols[1] ? cols[1].replace(/"/g, '').trim() : '';
+          if (val) clients.push(val);
+        }
+        if (clients.length > 0) {
+          localStorage.setItem('wv_clients', JSON.stringify(clients));
+          populateSelects(clients);
+        } else {
+          populateSelects(getClients());
+        }
+      })
+      .catch(function() {
+        // Fall back to localStorage if fetch fails
+        populateSelects(getClients());
+      });
+  }
+
+  window.onload = loadClientsFromSheet;
 
   /* ── Tab switching ────────────────────────────────────────────────────── */
   function switchTab(type, btn) {
@@ -609,8 +635,6 @@
     var btn = document.getElementById('save-settings-btn');
     btn.disabled = true;
     btn.textContent = 'Saving…';
-
-    alert("Sending emails: " + JSON.stringify(emails) + "\nClients: " + JSON.stringify(clients));
 
     fetch(API_URL, {
       method: "POST",
