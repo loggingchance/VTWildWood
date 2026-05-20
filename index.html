@@ -538,7 +538,7 @@
         // Parse column B (index 1) from rows 19+ (index 18+)
         var rows = csv.split("\n");
         var clients = [];
-        for (var i = 18; i < rows.length; i++) {
+        for (var i = 18; i < Math.min(rows.length, 120); i++) {
           var cols = rows[i].split(",");
           var val = cols[1] ? cols[1].replace(/"/g, '').trim() : '';
           if (val) clients.push(val);
