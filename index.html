@@ -669,7 +669,7 @@
     // Save to localStorage immediately
     localStorage.setItem('wv_clients', JSON.stringify(clients));
     localStorage.setItem('wv_emails',  JSON.stringify(emails));
-    populateSelects();
+    populateSelects(clients);
 
     var btn = document.getElementById('save-settings-btn');
     btn.disabled = true;
